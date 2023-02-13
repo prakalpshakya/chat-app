@@ -30,20 +30,23 @@ const upload = multer({
 
 router.post('/messages', upload.single('doc'), async (req, res) => {
   try {
-    const buffer = await sharp(req.file.buffer)
-      .resize({ width: 250, height: 250 })
-      .png()
-      .toBuffer()
-
     const message = new Message(req.body)
-    message.doc = buffer
+
+    if (req.file !== undefined) {
+      const buffer = await sharp(req.file.buffer)
+        .resize({ width: 250, height: 250 })
+        .png()
+        .toBuffer()
+
+      message.doc = buffer
+    }
 
     await message.save()
     const io = req.app.get('socketio')
     io.emit('message', message)
     res.send(message)
   } catch (e) {
-    res.send(e)
+    res.status(500).send(e)
   }
 })
 

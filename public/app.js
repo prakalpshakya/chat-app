@@ -30,9 +30,14 @@ const arrayBufferToBase64 = (buffer) => {
 }
 
 const addMessage = (message) => {
-  const buffer = message.doc.data
-  const imgSrc = `data:image/png;base64,${arrayBufferToBase64(buffer)}`
-  messages.innerHTML += `<h4>${message.name}</h4> <p>${message.message}</p> <img src=${imgSrc}>`
+  let imgTag = ''
+  if (message.doc !== undefined) {
+    const buffer = message.doc.data
+    const imgSrc = `data:image/png;base64,${arrayBufferToBase64(buffer)}`
+    imgTag = `<img src=${imgSrc}>`
+  }
+
+  messages.innerHTML += `<h4>${message.name}</h4> <p>${message.message}</p> ${imgTag}`
 }
 
 messageForm.addEventListener('submit', (e) => {
@@ -41,7 +46,10 @@ messageForm.addEventListener('submit', (e) => {
   const formData = new FormData()
   formData.append('name', user.value)
   formData.append('message', message.value)
-  formData.append('doc', doc.files[0])
+
+  if (doc.files[0] !== undefined) {
+    formData.append('doc', doc.files[0])
+  }
 
   postMessage('http://localhost:3000/messages', formData).then((data) => {
     if (data.errors) {
