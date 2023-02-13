@@ -2,6 +2,7 @@ const messageForm = document.querySelector('form')
 const user = document.querySelector('input')
 const message = document.querySelector('textarea')
 const messages = document.querySelector('#messages')
+const doc = document.querySelector('input[type="file"]')
 
 const getMessages = async (url = '') => {
   const response = await fetch(url)
@@ -18,20 +19,31 @@ getMessages('http://localhost:3000/messages').then((data) => {
   })
 })
 
+const arrayBufferToBase64 = (buffer) => {
+  let binary = ''
+  let bytes = new Uint8Array(buffer)
+  const len = bytes.byteLength
+  for (var i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i])
+  }
+  return window.btoa(binary)
+}
+
 const addMessage = (message) => {
-  messages.innerHTML += `<h4>${message.name}</h4> <p>${message.message}</p>`
+  const buffer = message.doc.data
+  const imgSrc = `data:image/png;base64,${arrayBufferToBase64(buffer)}`
+  messages.innerHTML += `<h4>${message.name}</h4> <p>${message.message}</p> <img src=${imgSrc}>`
 }
 
 messageForm.addEventListener('submit', (e) => {
   e.preventDefault()
 
-  const userValue = user.value
-  const messageValue = message.value
+  const formData = new FormData()
+  formData.append('name', user.value)
+  formData.append('message', message.value)
+  formData.append('doc', doc.files[0])
 
-  postMessage('http://localhost:3000/messages', {
-    name: userValue,
-    message: messageValue,
-  }).then((data) => {
+  postMessage('http://localhost:3000/messages', formData).then((data) => {
     if (data.errors) {
       alert(data.message)
     }
@@ -41,11 +53,7 @@ messageForm.addEventListener('submit', (e) => {
 const postMessage = async (url = '', data = {}) => {
   const response = await fetch(url, {
     method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
+    body: data,
   })
 
   return response.json()

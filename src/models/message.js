@@ -11,6 +11,9 @@ const messageSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  doc: {
+    type: Buffer,
+  },
 })
 
 const Message = mongoose.model('Message', messageSchema)
