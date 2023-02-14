@@ -19,25 +19,17 @@ getMessages('http://localhost:3000/messages').then((data) => {
   })
 })
 
-const arrayBufferToBase64 = (buffer) => {
-  let binary = ''
-  let bytes = new Uint8Array(buffer)
-  const len = bytes.byteLength
-  for (var i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i])
-  }
-  return window.btoa(binary)
-}
-
 const addMessage = (message) => {
-  let imgTag = ''
-  if (message.doc !== undefined) {
-    const buffer = message.doc.data
-    const imgSrc = `data:image/png;base64,${arrayBufferToBase64(buffer)}`
-    imgTag = `<img src=${imgSrc}>`
+  let fileTag = ''
+  if (message.file !== undefined) {
+    if (message.file.filetype === 'image') {
+      fileTag = `<img src='/docs/${message.file.filename}' width='200' height = '150'} >`
+    } else {
+      fileTag = `<a href='/docs/${message.file.filename}'>PDF file</a>`
+    }
   }
 
-  messages.innerHTML += `<h4>${message.name}</h4> <p>${message.message}</p> ${imgTag}`
+  messages.innerHTML += `<h4>${message.name}</h4> <p>${message.message}</p> ${fileTag}`
 }
 
 messageForm.addEventListener('submit', (e) => {

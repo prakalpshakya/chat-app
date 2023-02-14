@@ -11,9 +11,18 @@ const messageSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  doc: {
-    type: Buffer,
+  file: {
+    filename: {
+      type: String,
+    },
+    filetype: {
+      type: String,
+    },
   },
+
+  // doc: {
+  //   type: Buffer,
+  // },
 })
 
 const Message = mongoose.model('Message', messageSchema)

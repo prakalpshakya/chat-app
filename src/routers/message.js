@@ -15,13 +15,25 @@ router.get('/messages', async (req, res) => {
   }
 })
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(undefined, 'public/docs')
+  },
+  filename: (req, file, cb) => {
+    const extArray = file.mimetype.split('/')
+    const ext = extArray[extArray.length - 1]
+    cb(null, Date.now() + '.' + ext)
+  },
+})
+
 const upload = multer({
+  storage: storage,
   limits: {
     fileSize: 1000000,
   },
   fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      return cb(new Error('Please upload a Image'))
+    if (!file.originalname.match(/\.(jpg|jpeg|png|pdf)$/)) {
+      return cb(new Error('Please upload a Image or PDF'))
     }
 
     cb(undefined, true)
@@ -33,12 +45,13 @@ router.post('/messages', upload.single('doc'), async (req, res) => {
     const message = new Message(req.body)
 
     if (req.file !== undefined) {
-      const buffer = await sharp(req.file.buffer)
-        .resize({ width: 250, height: 250 })
-        .png()
-        .toBuffer()
+      message.file.filename = req.file.filename
 
-      message.doc = buffer
+      if (req.file.mimetype.includes('image')) {
+        message.file.filetype = 'image'
+      } else {
+        message.file.filetype = 'pdf'
+      }
     }
 
     await message.save()
