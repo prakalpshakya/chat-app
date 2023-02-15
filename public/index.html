@@ -10,13 +10,17 @@
   </head>
   <body>
     <div class="main-content">
-      <h1>Send Message</h1>
-      <form enctype="multipart/form-data">
-        <input id="name" placeholder="Name" />
+      <form enctype="multipart/form-data" class="form-message">
+        <h1 class="form-heading">Send Message</h1>
+        <input type="text" class="form-control" id="name" placeholder="Name" />
         <br />
-        <input type="file" name="doc" id="doc" />
+        <textarea
+          class="form-control"
+          id="message"
+          placeholder="Message"
+        ></textarea>
         <br />
-        <textarea id="message" placeholder="Message"></textarea>
+        <input class="form-control" type="file" name="doc" id="doc" />
         <br />
         <button>Send</button>
       </form>
