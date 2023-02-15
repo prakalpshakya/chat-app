@@ -47,6 +47,8 @@ messageForm.addEventListener('submit', (e) => {
     if (data.errors) {
       alert(data.message)
     }
+    doc.value = ''
+    message.value = ''
   })
 })
 
