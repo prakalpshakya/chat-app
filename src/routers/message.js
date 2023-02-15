@@ -4,14 +4,13 @@ const router = new express.Router()
 const multer = require('multer')
 const sharp = require('sharp')
 
-// GET /messages
 router.get('/messages', async (req, res) => {
   try {
     const messages = await Message.find({})
 
     res.send(messages)
   } catch (e) {
-    res.send(e)
+    res.status(500).send(e)
   }
 })
 
@@ -59,7 +58,7 @@ router.post('/messages', upload.single('doc'), async (req, res) => {
     io.emit('message', message)
     res.send(message)
   } catch (e) {
-    res.status(500).send(e)
+    res.status(400).send(e)
   }
 })
 
